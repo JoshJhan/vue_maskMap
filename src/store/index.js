@@ -10,26 +10,37 @@ export default createStore({
     location: [],
     // 存放API回傳的所有藥局資訊
     stores: [],
-    keywords:''
+    keywords: "",
+    showModel: false,
+    infoBoxSid: null,
   },
   getters: {
     cityList(state) {
-      // 城市
+      // 縣市列表
       return state.location.map((d) => d.name);
     },
     districtList(state) {
       // 利用Optional chaining operator來解決預設值的問題
-      return state.location.find((d) => d.name === state.currCity)?.districts || []
+      return (
+        state.location.find((d) => d.name === state.currCity)?.districts || []
+      );
     },
-    filteredStores(state){
+    filteredStores(state) {
       // 依縣市、行政區分組
       const { stores } = state;
 
       // 加入關鍵字判斷功能
       return state.keywords
-      ? stores.filter((d)=>d.name.includes(state.keywords))
-      : stores.filter((d)=>d.county === state.currCity && d.town === state.currDistrict);
-    }
+        ? stores.filter((d) => d.name.includes(state.keywords))
+        : stores.filter(
+            (d) => d.county === state.currCity && d.town === state.currDistrict
+          );
+    },
+    currDistrictInfo(state, getters) {
+      return (
+        getters.districtList.find((d) => d.name === state.currDistrict) || {}
+      );
+    },
   },
   mutations: {
     setcurrCity(state, payload) {
@@ -44,9 +55,15 @@ export default createStore({
     setStores(state, payload) {
       state.stores = payload;
     },
-    setKeywords(state,payload){
+    setKeywords(state, payload) {
       state.keywords = payload;
-    }
+    },
+    setshowModal(state, payload) {
+      state.showModal = payload;
+    },
+    setInfoBoxSid(state, payload) {
+      state.infoBoxSid = payload;
+    },
   },
   actions: {
     // 取得行政區資料
